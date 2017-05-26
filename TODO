@@ -1,0 +1,47 @@
+
+ - Generalize some signatures (if that doesnt interfere with inference)
+ - CallStacks
+
+
+{-
+import           Data.IORef
+import           Control.Monad.Freer.Writer
+-- | Lets you handle part of the events without consuming the entire effect.
+--
+-- This is useful when some events are to be handled specially or when
+-- they can be expressed in terms of other effects.
+handlePart :: (forall x. f x -> Eff (f ': r) (Maybe x))
+  -> Eff (f ': r) a
+  -> Eff (f ': r) a
+handlePart h (E a q) =
+  case decomp a of -- is it an f effect?
+    Right f -> -- relevant
+      do r <- h f
+         case r of -- handled or not handled? (Maybe x)
+           Just x  -> qComp q (handlePart h) x
+           Nothing -> E a (tsingleton (qComp q (handlePart h)))
+    Left _ -> -- not relevant - re-emit event and keep going
+      E a (tsingleton (qComp q (handlePart h)))
+handlePart _ (Val x) = Val x
+
+-- handlePart h = interpose Val _
+-- FIXME: reimplement handlePart with interpose? - needs testing
+-- FIXME: move to another module
+
+
+-- | Simple handler for Writer effects
+--
+-- Log survives exceptions
+runWriterIO :: (Monoid o, Member IO r)
+  => IORef o
+  -> Eff (Writer o ': r) a
+  -> Eff r a
+runWriterIO ioref = do
+  handleRelay return $ \(Writer o) k -> do
+    send (atomicModifyIORef ioref (\ref -> (ref `mappend` o, ())))
+    k ()
+
+-- | Simply @runM@ with its type restricted to @IO@
+runIO :: Eff '[IO] a -> IO a
+runIO = runM
+-}

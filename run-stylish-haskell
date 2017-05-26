@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+if ! test -e freer-converse.cabal
+then
+    echo "Run this in project root."
+    exit 1
+fi
+set -ex
+stylish-haskell -c stylish-haskell.yaml -i $(find . -name \*.hs)
