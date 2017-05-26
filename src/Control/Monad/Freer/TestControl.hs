@@ -29,10 +29,12 @@ module Control.Monad.Freer.TestControl
 
   ) where
 
+import           Control.Applicative
 import           Control.Arrow                                 (first)
 import           Control.Monad                                 (join)
 import           Control.Monad.Freer.Converse
 import           Control.Monad.Freer.Exception
+import           Data.Monoid
 import           Data.Functor.Classes.FreerConverse.Parametric
 
 -- | An effect for terminating the test when either the test has failed, or the
@@ -71,13 +73,13 @@ runTestControl onFail onFulfill t = runError t >>= \testResult -> case testResul
 -- | Runs a test, letting it terminate early, as appropriate.
 --
 -- Like 'runTestControl' but for those who like to pattern match instead.
-runTestControlData :: Eff (TestControl : r) a -> Eff r (Either String (Maybe a))
+runTestControlData :: Eff (TestControl ': r) a -> Eff r (Either String (Maybe a))
 runTestControlData a = runTestControl (return . Left) (return (Right Nothing)) (fmap (Right . Just) a)
 
 -- | Runs a test, letting it terminate early, as appropriate.
 --
 -- Like 'runTestControlData' but will not return a value from the test.
-runTestControlData_ :: Eff (TestControl : r) a -> Eff r (Either String ())
+runTestControlData_ :: Eff (TestControl ': r) a -> Eff r (Either String ())
 runTestControlData_ a = runTestControl (return . Left) (return (Right ())) (Right () <$ a)
 
 -- | Runs a test, letting it terminate early, as appropriate.

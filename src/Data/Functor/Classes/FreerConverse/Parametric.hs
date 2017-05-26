@@ -3,7 +3,7 @@
 -- of @f a@, because they require instances for @a@. This module
 -- provides type classes that mirror existing type classes but do not
 -- have the constraint on @a@, usually at the cost of functionality.
-
+{-# LANGUAGE CPP #-}
 module Data.Functor.Classes.FreerConverse.Parametric
   ( ShowP(..)
   , defaultShowsPrecP
@@ -39,10 +39,12 @@ instance ShowP Proxy where
   showsPrecP = showsPrec
   showP = show
 
+#if MIN_VERSION_base(4,8,0)
 -- | Equal to the Show instance
 instance Show a => ShowP (Const a) where
   showsPrecP = showsPrec
   showP = show
+#endif
 
 instance ShowP Maybe where
   showsPrecP = defaultShowsPrecP

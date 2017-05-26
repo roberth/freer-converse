@@ -7,6 +7,7 @@
 {-# LANGUAGE LambdaCase #-}
 module Main where
 
+import           Control.Applicative
 import           Control.Monad
 import           Control.Monad.Freer
 import           Control.Monad.Freer.Converse
