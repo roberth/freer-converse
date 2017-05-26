@@ -59,3 +59,7 @@ test-suite example-Hello
     hs-source-dirs:  src examples
   else
     Build-Depends:   freer-converse
+
+source-repository head
+  type: git
+  location: https://github.com/roberth/freer-converse
